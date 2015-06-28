@@ -1,7 +1,11 @@
 package com.hozakan.spotifystreamer.ui.fragment;
 
 import android.app.Fragment;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +22,8 @@ import android.widget.TextView;
 import com.hozakan.spotifystreamer.R;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+
+import java.io.IOException;
 
 /**
  * Created by gimbert on 15-06-28.
@@ -52,6 +58,7 @@ public class TrackPreviewFragment extends Fragment {
         return fragment;
     }
 
+    //views
     private TextView mEtArtistName;
     private TextView mEtAlbumTitle;
     private ImageView mIvAlbumPicture;
@@ -61,7 +68,12 @@ public class TrackPreviewFragment extends Fragment {
     private TextView mEtLastMoment;
     private ImageButton mButtonBack;
     private ImageButton mButtonPlayPause;
+    private ProgressBar mPbLoading;
     private ImageButton mButtonNext;
+
+    //display logic
+    private boolean mIsPlaying = false;
+    private MediaPlayer mMediaPlayer;
 
     @Nullable
     @Override
@@ -76,6 +88,7 @@ public class TrackPreviewFragment extends Fragment {
         mEtLastMoment = (TextView) rootView.findViewById(R.id.et_last_moment);
         mButtonBack = (ImageButton) rootView.findViewById(R.id.button_backward);
         mButtonPlayPause = (ImageButton) rootView.findViewById(R.id.button_play_pause);
+        mPbLoading = (ProgressBar) rootView.findViewById(R.id.pb_loading);
         mButtonNext = (ImageButton) rootView.findViewById(R.id.button_forward);
         return rootView;
     }
@@ -123,6 +136,11 @@ public class TrackPreviewFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "Button play pause clicked");
+                if (!mIsPlaying) {
+                    playMusic();
+                } else {
+                    pauseMusic();
+                }
             }
         });
         mButtonNext.setOnClickListener(new View.OnClickListener() {
@@ -131,5 +149,53 @@ public class TrackPreviewFragment extends Fragment {
                 Log.d(TAG, "Button next clicked");
             }
         });
+    }
+
+    @Override
+    public void onStop() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+            mIsPlaying = false;
+            mButtonPlayPause.setImageResource(android.R.drawable.ic_media_play);
+        }
+        super.onStop();
+    }
+
+    private void pauseMusic() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.pause();
+            mIsPlaying = false;
+            mButtonPlayPause.setImageResource(android.R.drawable.ic_media_play);
+        }
+    }
+
+    private void playMusic() {
+        if (mMediaPlayer == null) {
+            mMediaPlayer = new MediaPlayer();
+            mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    playMusic();
+                }
+            });
+            mMediaPlayer.setScreenOnWhilePlaying(true);
+            mMediaPlayer.setWakeMode(getActivity(), PowerManager.PARTIAL_WAKE_LOCK);
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            try {
+                mMediaPlayer.setDataSource(getArguments().getString(TRACK_PREVIEW_URL_ARG_KEY));
+                mMediaPlayer.prepareAsync(); // might take long! (for buffering, etc)
+                mPbLoading.setVisibility(View.VISIBLE);
+                mButtonPlayPause.setVisibility(View.GONE);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            mMediaPlayer.start();
+            mButtonPlayPause.setVisibility(View.VISIBLE);
+            mPbLoading.setVisibility(View.GONE);
+            mIsPlaying = true;
+            mButtonPlayPause.setImageResource(android.R.drawable.ic_media_pause);
+        }
     }
 }

@@ -74,7 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:src="@android:drawable/ic_media_rew" />
+                android:src="@android:drawable/ic_media_previous" />
 
             <ImageButton
                 android:id="@+id/button_play_pause"
@@ -83,12 +83,19 @@
                 android:layout_centerHorizontal="true"
                 android:src="@android:drawable/ic_media_play" />
 
+            <ProgressBar
+                android:id="@+id/pb_loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:visibility="gone" />
+
             <ImageButton
                 android:id="@+id/button_forward"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:src="@android:drawable/ic_media_ff" />
+                android:src="@android:drawable/ic_media_next" />
 
         </RelativeLayout>
     </LinearLayout>

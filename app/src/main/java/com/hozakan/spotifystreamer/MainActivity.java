@@ -6,16 +6,28 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.hozakan.spotifystreamer.ui.activity.ArtistActivity;
+import com.hozakan.spotifystreamer.ui.fragment.ListArtistTopTenTracksFragment;
 import com.hozakan.spotifystreamer.ui.fragment.SearchArtistFragment;
 
 import kaaes.spotify.webapi.android.models.Artist;
+import kaaes.spotify.webapi.android.models.Track;
 
-public class MainActivity extends AppCompatActivity implements SearchArtistFragment.SearchArtistFragmentCallback {
+public class MainActivity extends AppCompatActivity implements
+        SearchArtistFragment.SearchArtistFragmentCallback,
+        ListArtistTopTenTracksFragment.ListArtistTopTenTracksFragmentCallback {
+
+    private boolean mTwoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (findViewById(R.id.artist_top_ten_container) != null) {
+            mTwoPane = true;
+        } else {
+            mTwoPane = false;
+        }
     }
 
     @Override
@@ -42,6 +54,18 @@ public class MainActivity extends AppCompatActivity implements SearchArtistFragm
 
     @Override
     public void onArtistClicked(Artist artist) {
-        startActivity(ArtistActivity.createIntent(this, artist));
+        if (!mTwoPane) {
+            startActivity(ArtistActivity.createIntent(this, artist));
+        } else {
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.artist_top_ten_container, ListArtistTopTenTracksFragment.newInstance(artist.id))
+                    .commit();
+        }
+    }
+
+    @Override
+    public void onTrackClicked(Track track) {
+        
     }
 }
