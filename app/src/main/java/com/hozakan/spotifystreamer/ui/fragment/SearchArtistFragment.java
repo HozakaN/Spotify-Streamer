@@ -2,10 +2,12 @@ package com.hozakan.spotifystreamer.ui.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Config;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.hozakan.spotifystreamer.BuildConfig;
 import com.hozakan.spotifystreamer.R;
 import com.hozakan.spotifystreamer.task.SearchArtistsTask;
 import com.hozakan.spotifystreamer.ui.adapter.ArtistsListAdapter;
@@ -102,6 +105,8 @@ public class SearchArtistFragment extends Fragment implements SearchArtistsTask.
         });
         if (savedInstanceState != null && savedInstanceState.containsKey(SEARCH_TERM_KEY)) {
             mEtSearch.setText(savedInstanceState.getString(SEARCH_TERM_KEY));
+        } else if (BuildConfig.DEBUG) {
+            mEtSearch.setText("Coldplay");
         }
     }
 

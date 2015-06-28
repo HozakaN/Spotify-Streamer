@@ -1,5 +1,6 @@
 package com.hozakan.spotifystreamer.ui.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,6 +8,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -24,6 +26,10 @@ import kaaes.spotify.webapi.android.models.Tracks;
  */
 public class ListArtistTopTenTracksFragment extends Fragment implements ArtistTopTenTracksTask.ArtistTopTenTracksTaskCallback {
 
+    public interface ListArtistTopTenTracksFragmentCallback {
+        void onTrackClicked(Track track);
+    }
+
     private static final String ARTIST_ID_EXTRA_KEY = "ARTIST_ID_EXTRA_KEY";
     private static String sRetainedArtistId;
     private static Tracks sRetainedTracks;
@@ -39,8 +45,21 @@ public class ListArtistTopTenTracksFragment extends Fragment implements ArtistTo
     private ListView mListView;
     private ArtistTopTenTracksAdapter mAdapter;
     private ArtistTopTenTracksTask mTask;
+    private ListArtistTopTenTracksFragmentCallback mCallback;
 
     private String mArtistId;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        this.mCallback = (ListArtistTopTenTracksFragmentCallback) activity;
+    }
+
+    @Override
+    public void onDetach() {
+        this.mCallback = null;
+        super.onDetach();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,7 +81,14 @@ public class ListArtistTopTenTracksFragment extends Fragment implements ArtistTo
         super.onViewCreated(view, savedInstanceState);
         mAdapter = new ArtistTopTenTracksAdapter(getActivity(), new ArrayList<Track>());
         mListView.setAdapter(mAdapter);
-
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (mCallback != null) {
+                    mCallback.onTrackClicked(mAdapter.getItem(position));
+                }
+            }
+        });
         if (savedInstanceState != null
                 && savedInstanceState.containsKey(ARTIST_ID_EXTRA_KEY)
                 && savedInstanceState.get(ARTIST_ID_EXTRA_KEY).equals(sRetainedArtistId)) {

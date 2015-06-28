@@ -9,11 +9,12 @@ import com.hozakan.spotifystreamer.R;
 import com.hozakan.spotifystreamer.ui.fragment.ListArtistTopTenTracksFragment;
 
 import kaaes.spotify.webapi.android.models.Artist;
+import kaaes.spotify.webapi.android.models.Track;
 
 /**
  * Created by gimbert on 15-06-28.
  */
-public class ArtistActivity extends AppCompatActivity {
+public class ArtistActivity extends AppCompatActivity implements ListArtistTopTenTracksFragment.ListArtistTopTenTracksFragmentCallback {
 
     private static final String ARTIST_ID_EXTRA_KEY = "ARTIST_ID_EXTRA_KEY";
     private static final String ARTIST_NAME_EXTRA_KEY = "ARTIST_NAME_EXTRA_KEY";
@@ -39,5 +40,12 @@ public class ArtistActivity extends AppCompatActivity {
                             ListArtistTopTenTracksFragment.newInstance(getIntent().getStringExtra(ARTIST_ID_EXTRA_KEY)))
                     .commit();
         }
+    }
+
+    @Override
+    public void onTrackClicked(Track track) {
+        startActivity(
+                TrackPreviewActivity.createIntent(
+                        this, getIntent().getStringExtra(ARTIST_NAME_EXTRA_KEY), track));
     }
 }
