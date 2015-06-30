@@ -31,8 +31,8 @@ public class ListArtistTopTenTracksFragment extends Fragment implements ArtistTo
     }
 
     private static final String ARTIST_ID_EXTRA_KEY = "ARTIST_ID_EXTRA_KEY";
-    private static String sRetainedArtistId;
-    private static Tracks sRetainedTracks;
+    private String mRetainedArtistId;
+    private Tracks mRetainedTracks;
 
     public static ListArtistTopTenTracksFragment newInstance(String artistId) {
         ListArtistTopTenTracksFragment fragment = new ListArtistTopTenTracksFragment();
@@ -91,8 +91,8 @@ public class ListArtistTopTenTracksFragment extends Fragment implements ArtistTo
         });
         if (savedInstanceState != null
                 && savedInstanceState.containsKey(ARTIST_ID_EXTRA_KEY)
-                && savedInstanceState.get(ARTIST_ID_EXTRA_KEY).equals(sRetainedArtistId)) {
-            onSuccess(sRetainedArtistId, sRetainedTracks);
+                && savedInstanceState.get(ARTIST_ID_EXTRA_KEY).equals(mRetainedArtistId)) {
+            onSuccess(mRetainedArtistId, mRetainedTracks);
         } else {
             mTask = new ArtistTopTenTracksTask(this);
             mTask.execute(mArtistId);
@@ -102,8 +102,8 @@ public class ListArtistTopTenTracksFragment extends Fragment implements ArtistTo
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (!TextUtils.isEmpty(sRetainedArtistId)) {
-            outState.putString(ARTIST_ID_EXTRA_KEY, sRetainedArtistId);
+        if (!TextUtils.isEmpty(mRetainedArtistId)) {
+            outState.putString(ARTIST_ID_EXTRA_KEY, mRetainedArtistId);
         }
     }
 
@@ -121,8 +121,8 @@ public class ListArtistTopTenTracksFragment extends Fragment implements ArtistTo
                 }
                 mAdapter.notifyDataSetChanged();
             }
-            sRetainedArtistId = mArtistId;
-            sRetainedTracks = tracks;
+            mRetainedArtistId = mArtistId;
+            mRetainedTracks = tracks;
         }
     }
 

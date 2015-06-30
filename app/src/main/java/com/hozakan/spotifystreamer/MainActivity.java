@@ -66,6 +66,6 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onTrackClicked(Track track) {
-        
+
     }
 }
